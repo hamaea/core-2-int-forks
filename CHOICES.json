@@ -1,0 +1,191 @@
+[
+  {
+    "CHOICE_ID": "A01.AC01",
+    "PARENT_NODE": "A01",
+    "OPTION_LABEL": "Hang up the phone.",
+    "LEADS_TO": "A02",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A02.AC01",
+    "PARENT_NODE": "A02",
+    "OPTION_LABEL": "Go to my bedroom.",
+    "LEADS_TO": "A03",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A03.AC01",
+    "PARENT_NODE": "A03",
+    "OPTION_LABEL": "I need to go.",
+    "LEADS_TO": "A04",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A04.AC01",
+    "PARENT_NODE": "A04",
+    "OPTION_LABEL": "Get ready.",
+    "LEADS_TO": "A05",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A05.AC01",
+    "PARENT_NODE": "A05",
+    "OPTION_LABEL": "Hurry.",
+    "LEADS_TO": "A06",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A06.AC01",
+    "PARENT_NODE": "A06",
+    "OPTION_LABEL": "Captain Richard Madden?",
+    "LEADS_TO": "A07",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A07.AC01",
+    "PARENT_NODE": "A07",
+    "OPTION_LABEL": "Keep going.",
+    "LEADS_TO": "A08",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A08.AC01",
+    "PARENT_NODE": "A08",
+    "OPTION_LABEL": "Where are we?",
+    "LEADS_TO": "A09",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A09.AC01",
+    "PARENT_NODE": "A09",
+    "OPTION_LABEL": "Get out.",
+    "LEADS_TO": "A10",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A10.AC01",
+    "PARENT_NODE": "A10",
+    "OPTION_LABEL": "Throw them some money.",
+    "LEADS_TO": "A11",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A11.AC01",
+    "PARENT_NODE": "A11",
+    "OPTION_LABEL": "Meditate.",
+    "LEADS_TO": "A12",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A12.AC01",
+    "PARENT_NODE": "A12",
+    "OPTION_LABEL": "I must keep going.",
+    "LEADS_TO": "A13",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A13.AC01",
+    "PARENT_NODE": "A13",
+    "OPTION_LABEL": "Accept my fate.",
+    "LEADS_TO": "A14",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A14.AC01",
+    "PARENT_NODE": "A14",
+    "OPTION_LABEL": "The garden?",
+    "LEADS_TO": "A15",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A15.AC01",
+    "PARENT_NODE": "A15",
+    "OPTION_LABEL": "Ts’ui Pen.",
+    "LEADS_TO": "A16",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A16.AC01",
+    "PARENT_NODE": "A16",
+    "OPTION_LABEL": "Look around.",
+    "LEADS_TO": "A17",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A17.AC01",
+    "PARENT_NODE": "A17",
+    "OPTION_LABEL": "It’s madness.",
+    "LEADS_TO": "A18",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A18.AC01",
+    "PARENT_NODE": "A18",
+    "OPTION_LABEL": "A cabinet?",
+    "LEADS_TO": "A19",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A19.AC01",
+    "PARENT_NODE": "A19",
+    "OPTION_LABEL": "Wait.",
+    "LEADS_TO": "A20",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A20.AC01",
+    "PARENT_NODE": "A20",
+    "OPTION_LABEL": "Hand back the paper.",
+    "LEADS_TO": "A21",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A21.AC01",
+    "PARENT_NODE": "A21",
+    "OPTION_LABEL": "What?",
+    "LEADS_TO": "A22",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A22.AC01",
+    "PARENT_NODE": "A22",
+    "OPTION_LABEL": "But what about...",
+    "LEADS_TO": "A23",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A23.AC01",
+    "PARENT_NODE": "A23",
+    "OPTION_LABEL": "Chess.",
+    "LEADS_TO": "A24",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A24.AC01",
+    "PARENT_NODE": "A24",
+    "OPTION_LABEL": "Does he suspect me?",
+    "LEADS_TO": "A25",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A25.AC01",
+    "PARENT_NODE": "A25",
+    "OPTION_LABEL": "Distract him.",
+    "LEADS_TO": "A26",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A26.AC01",
+    "PARENT_NODE": "A26",
+    "OPTION_LABEL": "Shoot him.",
+    "LEADS_TO": "A27",
+    "notes": "canon"
+  },
+  {
+    "CHOICE_ID": "A27.AC01",
+    "PARENT_NODE": "A27",
+    "OPTION_LABEL": "End.",
+    "LEADS_TO": "",
+    "notes": "canon"
+  }
+]
