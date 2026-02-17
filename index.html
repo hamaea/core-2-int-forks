@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Forking Paths — Canon Prototype</title>
+    <title>THE GARDEN</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,18 +15,33 @@
 
 <body>
     <main>
+        <!-- Reader view -->
+        <div id="readerView">
+            <div id="nodeText" class="text">Loading…</div>
 
-        <div id="nodeText" class="text">Loading…</div>
+            <br>
+            <div id="choices" class="choices"></div>
+            </br>
 
-        <br>
-        <div id="choices" class="choices"></div>
-        </br>
-        <div id="status" class="status"></div>
-        <div id="error" class="error" style="display:none;"></div>
-        <div class="meta">
-            <div id="nodeId" class="node-id"></div>
-            <div id="nodeType" class="node-type"></div>
+            <div id="status" class="status"></div>
+            <div id="error" class="error" style="display:none;"></div>
+
+            <div class="meta">
+                <div id="nodeId" class="node-id"></div>
+                <div id="nodeType" class="node-type"></div>
+            </div>
         </div>
+
+        <!-- Summary view (shown at end) -->
+        <div id="summaryView" style="display:none;">
+            <div class="summary-header">
+                <div class="summary-title">Your path</div>
+                <button id="restartBtn" class="restart">RE-ENTER THE GARDEN</button>
+            </div>
+
+            <div id="summaryScroll" class="summary-scroll"></div>
+        </div>
+
     </main>
 </body>
 <script src="script.js"></script>
