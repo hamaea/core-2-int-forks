@@ -2,190 +2,577 @@
   {
     "CHOICE_ID": "A01.AC01",
     "PARENT_NODE": "A01",
-    "OPTION_LABEL": "Hang up the phone.",
+    "OPTION_LABEL": "HANG UP THE PHONE.",
     "LEADS_TO": "A02",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
   },
   {
     "CHOICE_ID": "A02.AC01",
     "PARENT_NODE": "A02",
-    "OPTION_LABEL": "Go to my bedroom.",
+    "OPTION_LABEL": "GO TO MY BEDROOM.",
     "LEADS_TO": "A03",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A02",
+    "OPTION_LABEL": "GO OUTSIDE.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": "A06"
   },
   {
     "CHOICE_ID": "A03.AC01",
     "PARENT_NODE": "A03",
-    "OPTION_LABEL": "I need to go.",
+    "OPTION_LABEL": "I NEED TO GO.",
     "LEADS_TO": "A04",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "B_A03.AC01",
+    "PARENT_NODE": "A03",
+    "OPTION_LABEL": "I NEED TO DIE.",
+    "LEADS_TO": "B_A03",
+    "notes": "MAJOR",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "B_A03.AC01.AC01",
+    "PARENT_NODE": "B_A03",
+    "OPTION_LABEL": "END IT.",
+    "LEADS_TO": "B_A03_01",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "B_A03.AC01.AC02",
+    "PARENT_NODE": "B_A03",
+    "OPTION_LABEL": "DELAY.",
+    "LEADS_TO": "B_A03_04",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "B_A03.AC01.AC01.AC01",
+    "PARENT_NODE": "B_A03_01",
+    "OPTION_LABEL": "SHOOT.",
+    "LEADS_TO": "B_A03_02",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "B_A03.AC01.AC01.AC02",
+    "PARENT_NODE": "B_A03_01",
+    "OPTION_LABEL": "NO.",
+    "LEADS_TO": "B_A03_03",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "B_A03.AC01.AC01.AC01.AC01",
+    "PARENT_NODE": "B_A03_02",
+    "OPTION_LABEL": "GOODBYE.",
+    "LEADS_TO": "B_A03_02.5",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "B_A03.AC01.AC01.AC01.AC01. AC01",
+    "PARENT_NODE": "B_A03_02.5",
+    "OPTION_LABEL": "WHY.",
+    "LEADS_TO": "B_A03_03",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "B_A03.AC01.AC01.AC01.AC01. AC01.AC01",
+    "PARENT_NODE": "B_A03_03",
+    "OPTION_LABEL": "GET READY.",
+    "LEADS_TO": "A05",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "B_A03.AC01.AC01.AC01.AC01. AC01.AC01.AC01",
+    "PARENT_NODE": "B_A03_04",
+    "OPTION_LABEL": "LEAVE THE HOUSE.",
+    "LEADS_TO": "B_A05",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "B_A05.AC01",
+    "PARENT_NODE": "B_A05",
+    "OPTION_LABEL": "HURRY.",
+    "LEADS_TO": "A06",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A04.AC01",
     "PARENT_NODE": "A04",
-    "OPTION_LABEL": "Get ready.",
+    "OPTION_LABEL": "GET READY.",
     "LEADS_TO": "A05",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A04",
+    "OPTION_LABEL": "GO ON A WALK.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": "A06"
   },
   {
     "CHOICE_ID": "A05.AC01",
     "PARENT_NODE": "A05",
-    "OPTION_LABEL": "Hurry.",
+    "OPTION_LABEL": "HURRY.",
     "LEADS_TO": "A06",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A05",
+    "OPTION_LABEL": "GATHER SURROUNDINGS.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "",
+    "OPTION_LABEL": "",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "",
+    "OPTION_LABEL": "",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "",
+    "OPTION_LABEL": "",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "",
+    "OPTION_LABEL": "",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "",
+    "OPTION_LABEL": "",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A06.AC01",
     "PARENT_NODE": "A06",
-    "OPTION_LABEL": "Captain Richard Madden?",
+    "OPTION_LABEL": "CAPTAIN RICHARD MADDEN?",
     "LEADS_TO": "A07",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A06",
+    "OPTION_LABEL": "DAD?",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A07.AC01",
     "PARENT_NODE": "A07",
-    "OPTION_LABEL": "Keep going.",
+    "OPTION_LABEL": "KEEP GOING.",
     "LEADS_TO": "A08",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "C_A07.AC01",
+    "PARENT_NODE": "A07",
+    "OPTION_LABEL": "IS THIS WORTH IT?",
+    "LEADS_TO": "",
+    "notes": "MAJOR",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A08.AC01",
     "PARENT_NODE": "A08",
-    "OPTION_LABEL": "Where are we?",
+    "OPTION_LABEL": "WHERE ARE WE?",
     "LEADS_TO": "A09",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A08",
+    "OPTION_LABEL": "I WASN'T PAYING ATTENTION...",
+    "LEADS_TO": "A09",
+    "notes": "FAKE",
+    "MERGE_TO": "A09"
   },
   {
     "CHOICE_ID": "A09.AC01",
     "PARENT_NODE": "A09",
-    "OPTION_LABEL": "Get out.",
+    "OPTION_LABEL": "GET OUT.",
     "LEADS_TO": "A10",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "D_A09.AC01",
+    "PARENT_NODE": "A09",
+    "OPTION_LABEL": "KEEP GOING.",
+    "LEADS_TO": "",
+    "notes": "MAJOR",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A10.AC01",
     "PARENT_NODE": "A10",
-    "OPTION_LABEL": "Throw them some money.",
+    "OPTION_LABEL": "THROW THEM SOME MONEY.",
     "LEADS_TO": "A11",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A10",
+    "OPTION_LABEL": "IGNORE THEM.",
+    "LEADS_TO": "A11",
+    "notes": "SKIP",
+    "MERGE_TO": "A12"
   },
   {
     "CHOICE_ID": "A11.AC01",
     "PARENT_NODE": "A11",
-    "OPTION_LABEL": "Meditate.",
+    "OPTION_LABEL": "WHAT A BEAUTIFUL COUNTRY.",
     "LEADS_TO": "A12",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A11",
+    "OPTION_LABEL": "WHY AM I DOING THIS?",
+    "LEADS_TO": "A13",
+    "notes": "SKIP",
+    "MERGE_TO": "A13"
   },
   {
     "CHOICE_ID": "A12.AC01",
     "PARENT_NODE": "A12",
-    "OPTION_LABEL": "I must keep going.",
+    "OPTION_LABEL": "I MUST KEEP GOING.",
     "LEADS_TO": "A13",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "E_A12.AC01",
+    "PARENT_NODE": "A12",
+    "OPTION_LABEL": "I WANT TO STAY HERE.",
+    "LEADS_TO": "",
+    "notes": "MAJOR",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A13.AC01",
     "PARENT_NODE": "A13",
-    "OPTION_LABEL": "Accept my fate.",
+    "OPTION_LABEL": "ACCEPT MY FATE.",
     "LEADS_TO": "A14",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "C_A13.AC01",
+    "PARENT_NODE": "A13",
+    "OPTION_LABEL": "I WANT TO LIVE MY OWN LIFE.",
+    "LEADS_TO": "",
+    "notes": "MAJOR",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A14.AC01",
     "PARENT_NODE": "A14",
-    "OPTION_LABEL": "The garden?",
+    "OPTION_LABEL": "THE GARDEN?",
     "LEADS_TO": "A15",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A14",
+    "OPTION_LABEL": "I REMEMBER.",
+    "LEADS_TO": "A15",
+    "notes": "FAKE",
+    "MERGE_TO": "A15"
   },
   {
     "CHOICE_ID": "A15.AC01",
     "PARENT_NODE": "A15",
-    "OPTION_LABEL": "Ts’ui Pen.",
+    "OPTION_LABEL": "TS’UI PEN.",
     "LEADS_TO": "A16",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A15",
+    "OPTION_LABEL": "WHAT ARE THE ODDS?",
+    "LEADS_TO": "A16",
+    "notes": "FAKE",
+    "MERGE_TO": "A16"
   },
   {
     "CHOICE_ID": "A16.AC01",
     "PARENT_NODE": "A16",
-    "OPTION_LABEL": "Look around.",
+    "OPTION_LABEL": "LOOK AROUND.",
     "LEADS_TO": "A17",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A16",
+    "OPTION_LABEL": "KILL HIM.",
+    "LEADS_TO": "",
+    "notes": "SKIP",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A17.AC01",
     "PARENT_NODE": "A17",
-    "OPTION_LABEL": "It’s madness.",
+    "OPTION_LABEL": "IT’S MADNESS.",
     "LEADS_TO": "A18",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A17",
+    "OPTION_LABEL": "THEY NEVER MADE SENSE.",
+    "LEADS_TO": "A18",
+    "notes": "FAKE",
+    "MERGE_TO": "A18"
   },
   {
     "CHOICE_ID": "A18.AC01",
     "PARENT_NODE": "A18",
-    "OPTION_LABEL": "A cabinet?",
+    "OPTION_LABEL": "A CABINET?",
     "LEADS_TO": "A19",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A18",
+    "OPTION_LABEL": "I DON’T CARE.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A19.AC01",
     "PARENT_NODE": "A19",
-    "OPTION_LABEL": "Wait.",
+    "OPTION_LABEL": "WAIT.",
     "LEADS_TO": "A20",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A19",
+    "OPTION_LABEL": "SHOOT HIM.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A20.AC01",
     "PARENT_NODE": "A20",
-    "OPTION_LABEL": "Hand back the paper.",
+    "OPTION_LABEL": "HAND BACK THE PAPER.",
     "LEADS_TO": "A21",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A20",
+    "OPTION_LABEL": "THROW IT OUT.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "A21.5.AC01",
+    "PARENT_NODE": "A21",
+    "OPTION_LABEL": "LISTEN.",
+    "LEADS_TO": "A21.5",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A21.AC01",
-    "PARENT_NODE": "A21",
-    "OPTION_LABEL": "What?",
+    "PARENT_NODE": "A21.5",
+    "OPTION_LABEL": "WHAT?",
     "LEADS_TO": "A22",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A21.5",
+    "OPTION_LABEL": "THEN CHOICE MEANS NOTHING.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A22.AC01",
     "PARENT_NODE": "A22",
-    "OPTION_LABEL": "But what about...",
+    "OPTION_LABEL": "BUT WHAT ABOUT...",
     "LEADS_TO": "A23",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A22",
+    "OPTION_LABEL": "THEN TIME WAS THE ANSWER.",
+    "LEADS_TO": "A23",
+    "notes": "FAKE",
+    "MERGE_TO": "A23"
   },
   {
     "CHOICE_ID": "A23.AC01",
     "PARENT_NODE": "A23",
-    "OPTION_LABEL": "Chess.",
+    "OPTION_LABEL": "CHESS.",
     "LEADS_TO": "A24",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A23",
+    "OPTION_LABEL": "NONE OF THEM.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A24.AC01",
     "PARENT_NODE": "A24",
-    "OPTION_LABEL": "Does he suspect me?",
+    "OPTION_LABEL": "DOES HE SUSPECT ME?",
     "LEADS_TO": "A25",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A24",
+    "OPTION_LABEL": "I WATCHED HIS FACE.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A25.AC01",
     "PARENT_NODE": "A25",
-    "OPTION_LABEL": "Distract him.",
+    "OPTION_LABEL": "DISTRACT HIM.",
     "LEADS_TO": "A26",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "",
+    "PARENT_NODE": "A25",
+    "OPTION_LABEL": "I NEED TO KNOW MORE.",
+    "LEADS_TO": "",
+    "notes": "",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A26.AC01",
     "PARENT_NODE": "A26",
-    "OPTION_LABEL": "Shoot him.",
+    "OPTION_LABEL": "SHOOT HIM.",
     "LEADS_TO": "A27",
-    "notes": "canon"
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "F_A26.AC01",
+    "PARENT_NODE": "A26",
+    "OPTION_LABEL": "LEAVE.",
+    "LEADS_TO": "F_A26",
+    "notes": "MAJOR",
+    "MERGE_TO": ""
   },
   {
     "CHOICE_ID": "A27.AC01",
     "PARENT_NODE": "A27",
-    "OPTION_LABEL": "End.",
-    "LEADS_TO": "",
-    "notes": "canon"
+    "OPTION_LABEL": "END.",
+    "LEADS_TO": "A01",
+    "notes": "canon",
+    "MERGE_TO": "CANON"
+  },
+  {
+    "CHOICE_ID": "F_A26.AC01.AC01",
+    "PARENT_NODE": "F_A26",
+    "OPTION_LABEL": "I'M SORRY, ALBERT.",
+    "LEADS_TO": "A27",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "F_A26.AC01.AC02",
+    "PARENT_NODE": "F_A26",
+    "OPTION_LABEL": "EXPLAIN.",
+    "LEADS_TO": "F_A26_02",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "F_A26.AC01.AC02.AC01",
+    "PARENT_NODE": "F_A26_02",
+    "OPTION_LABEL": "BEG HIS FORGIVENESS.",
+    "LEADS_TO": "F_A26_02A",
+    "notes": "",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "F_A26.AC01.AC02.AC02",
+    "PARENT_NODE": "F_A26_02",
+    "OPTION_LABEL": "ACT BEFORE MADDEN ENTERS.",
+    "LEADS_TO": "A27",
+    "notes": "MAJOR",
+    "MERGE_TO": ""
+  },
+  {
+    "CHOICE_ID": "F_A26.AC01.AC02.AC03.AC01",
+    "PARENT_NODE": "F_A26_02A",
+    "OPTION_LABEL": "KILL HIM.",
+    "LEADS_TO": "A27",
+    "notes": "",
+    "MERGE_TO": ""
   }
 ]
