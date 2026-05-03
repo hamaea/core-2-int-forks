@@ -15,8 +15,20 @@
 
 <body>
     <main>
+        <canvas id="asciiField" class="ascii-field" aria-hidden="true"></canvas>
+
+        <section id="landingView" class="landing-view">
+            <div class="landing-copy">
+                <div class="landing-copy-text">
+                    <p class="landing-title">THE GARDEN OF FORKING PATHS</p>
+                    <p class="landing-author">JORGE LUIS BORGES</p>
+                </div>
+                <button id="enterBtn" class="enter-button" type="button">&gt;&gt; ENTER THE GARDEN.</button>
+            </div>
+        </section>
+
         <!-- Reader view -->
-        <div id="readerView">
+        <div id="readerView" style="display:none;">
             <div id="nodeText" class="text">Loading…</div>
 
             <br>
