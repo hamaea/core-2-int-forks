@@ -1,6 +1,7 @@
 // Your file names (must be in the same folder as this HTML)
 const NODES_FILE = "./NODES.json";
 const CHOICES_FILE = "./CHOICES.json";
+const LANDING_ART_FILE = "./landing-art.txt";
 
 // Data stores
 let nodesById = {};
@@ -24,7 +25,11 @@ let asciiViewportHeight = 0;
 let focusBoxOrigin = null;
 let previousAsciiPointer = null;
 let narrativeMergeProgress = 0;
-let landingStoryCells = new Map();
+let landingArtText = "";
+let choiceHistory = [];
+let canonNodeOrder = [];
+let canonIndexByNode = {};
+let summaryHoveredDotIndex = null;
 
 const ASCII_BASE_CHAR = ".";
 const ASCII_MIN_COLUMNS = 40;
@@ -45,6 +50,7 @@ const ASCII_COLLAPSE_START = 0.78;
 // DOM refs (landing)
 const landingViewEl = document.getElementById("landingView");
 const asciiFieldEl = document.getElementById("asciiField");
+const landingArtEl = document.getElementById("landingArt");
 const enterBtn = document.getElementById("enterBtn");
 
 // DOM refs (reader)
@@ -60,6 +66,17 @@ const readerViewEl = document.getElementById("readerView");
 const summaryViewEl = document.getElementById("summaryView");
 const summaryScrollEl = document.getElementById("summaryScroll");
 const restartBtn = document.getElementById("restartBtn");
+const progressTrackerEl = document.getElementById("progressTracker");
+const progressPathEl = document.getElementById("progressPath");
+const progressDotsEl = document.getElementById("progressDots");
+const progressHoverDotEl = document.getElementById("progressHoverDot");
+const summaryTrackerEl = document.getElementById("summaryTracker");
+const summaryPathEl = document.getElementById("summaryPath");
+const summaryAltPathsEl = document.getElementById("summaryAltPaths");
+const summaryDotsEl = document.getElementById("summaryDots");
+const summaryHoverDotEl = document.getElementById("summaryHoverDot");
+
+const SHOW_SUMMARY_ALT_PATHS = false;
 
 function buildAsciiField() {
   if (!asciiFieldEl) return;
@@ -82,7 +99,6 @@ function buildAsciiField() {
 
   asciiColumns = Math.max(ASCII_MIN_COLUMNS, Math.ceil(width / asciiCellWidth));
   asciiRows = Math.max(ASCII_MIN_ROWS, Math.ceil(height / asciiCellHeight));
-  landingStoryCells = new Map();
 
   renderAsciiField();
 }
@@ -112,6 +128,452 @@ function measureAsciiMetrics() {
 function getAsciiFont() {
   const computed = window.getComputedStyle(document.body);
   return `${computed.fontSize} ${computed.fontFamily}`;
+}
+
+function buildLandingArtMarkup(text) {
+  if (!text.trim()) return "";
+
+  const lines = text.split(/\r?\n/);
+  const bounds = lines.reduce((acc, line) => {
+    let first = -1;
+    let last = -1;
+
+    for (let index = 0; index < line.length; index += 1) {
+      if (line[index] !== " ") {
+        if (first === -1) first = index;
+        last = index;
+      }
+    }
+
+    if (first === -1) return acc;
+
+    return {
+      left: Math.min(acc.left, first),
+      right: Math.max(acc.right, last)
+    };
+  }, { left: Infinity, right: -Infinity });
+
+  if (!Number.isFinite(bounds.left) || !Number.isFinite(bounds.right)) return "";
+
+  const croppedLines = lines.map((line) => line.slice(bounds.left, bounds.right + 1));
+  const sourceHeight = Math.max(1, croppedLines.length);
+  const maxLineLength = croppedLines.reduce((max, line) => Math.max(max, line.length), 0);
+  const targetRows = Math.max(26, Math.floor((window.innerHeight || 900) / Math.max(6, asciiCellHeight * 0.84)));
+  const targetCols = Math.max(110, Math.floor((window.innerWidth || 1440) / Math.max(4, asciiCellWidth * 0.78)));
+  // Use one sampling step for both axes so the ASCII form keeps its source proportions.
+  const sampleStep = Math.max(
+    1,
+    Math.ceil(Math.max(sourceHeight / targetRows, maxLineLength / targetCols))
+  );
+  const output = [];
+
+  for (let row = 0; row < croppedLines.length; row += sampleStep) {
+    const line = croppedLines[row];
+    let sampled = "";
+
+    for (let col = 0; col < maxLineLength; col += sampleStep) {
+      sampled += line[col] || " ";
+    }
+
+    output.push(sampled.replace(/\s+$/, ""));
+  }
+
+  return output.join("\n");
+}
+
+function normalizeChoiceNote(choice) {
+  return String(choice?.notes || "").trim().toLowerCase();
+}
+
+function buildCanonProgressMap() {
+  canonNodeOrder = ["A01"];
+  canonIndexByNode = { A01: 0 };
+  let currentNodeId = "A01";
+  let guard = 0;
+
+  while (guard < 200) {
+    guard += 1;
+    const options = choicesByParent[currentNodeId] || [];
+    const canonChoice = options.find((choice) => normalizeChoiceNote(choice) === "canon");
+    if (!canonChoice) break;
+
+    const nextNodeId = canonChoice.LEADS_TO;
+    if (!nextNodeId || nextNodeId === "END") {
+      canonIndexByNode.END = canonNodeOrder.length;
+      break;
+    }
+
+    if (canonIndexByNode[nextNodeId] != null) break;
+
+    canonIndexByNode[nextNodeId] = canonNodeOrder.length;
+    canonNodeOrder.push(nextNodeId);
+    currentNodeId = nextNodeId;
+  }
+}
+
+function findNearestCanonNode(startNodeId) {
+  if (!startNodeId) return null;
+  if (canonIndexByNode[startNodeId] != null) return startNodeId;
+
+  const queue = [[startNodeId, 0]];
+  const visited = new Set([startNodeId]);
+  let bestNodeId = null;
+  let bestDistance = Infinity;
+  let bestCanonIndex = Infinity;
+
+  while (queue.length > 0) {
+    const [nodeId, distance] = queue.shift();
+
+    if (canonIndexByNode[nodeId] != null) {
+      const canonIndex = canonIndexByNode[nodeId];
+      if (
+        distance < bestDistance ||
+        (distance === bestDistance && canonIndex < bestCanonIndex)
+      ) {
+        bestNodeId = nodeId;
+        bestDistance = distance;
+        bestCanonIndex = canonIndex;
+      }
+      continue;
+    }
+
+    const options = choicesByParent[nodeId] || [];
+    for (const option of options) {
+      const nextNodeId = option.LEADS_TO;
+      if (!nextNodeId || nextNodeId === "END" || visited.has(nextNodeId)) continue;
+      visited.add(nextNodeId);
+      queue.push([nextNodeId, distance + 1]);
+    }
+  }
+
+  return bestNodeId;
+}
+
+function estimateEdgesToCanon(startNodeId, targetCanonNodeId) {
+  if (!startNodeId || !targetCanonNodeId) return 0;
+  if (startNodeId === targetCanonNodeId) return 0;
+
+  const queue = [[startNodeId, 0]];
+  const visited = new Set([startNodeId]);
+
+  while (queue.length > 0) {
+    const [nodeId, distance] = queue.shift();
+    const options = choicesByParent[nodeId] || [];
+
+    for (const option of options) {
+      const nextNodeId = option.LEADS_TO;
+      if (!nextNodeId || nextNodeId === "END" || visited.has(nextNodeId)) continue;
+      if (nextNodeId === targetCanonNodeId) return distance + 1;
+      visited.add(nextNodeId);
+      queue.push([nextNodeId, distance + 1]);
+    }
+  }
+
+  return 1;
+}
+
+function getBranchAmplitude(note) {
+  if (note === "minor") return 44;
+  if (note === "major") return 82;
+  if (note === "skip") return 70;
+  return 60;
+}
+
+function resolveBranchMergeIndex(choice, nextNodeId, fallbackCanonIndex) {
+  const mergeTarget = String(choice?.MERGE_TO || "").trim();
+
+  if (mergeTarget && mergeTarget !== "CANON" && canonIndexByNode[mergeTarget] != null) {
+    return canonIndexByNode[mergeTarget];
+  }
+
+  if (canonIndexByNode[nextNodeId] != null) {
+    return canonIndexByNode[nextNodeId];
+  }
+
+  const nearestCanonNodeId = findNearestCanonNode(nextNodeId);
+  if (nearestCanonNodeId && canonIndexByNode[nearestCanonNodeId] != null) {
+    return canonIndexByNode[nearestCanonNodeId];
+  }
+
+  return fallbackCanonIndex + 1;
+}
+
+function buildProgressGeometry(choiceList, width = 1000, height = 220, options = {}) {
+  const { extendCanonToEdge = false } = options;
+  const totalCanonUnits = Math.max(1, canonNodeOrder.length - 1);
+  const padX = 0;
+  const baselineY = height * 0.645;
+  const usableWidth = width - (padX * 2);
+  const dotPoints = [];
+
+  const toX = (unit) => padX + ((unit / totalCanonUnits) * usableWidth);
+  const getLoopPoint = (baseUnit, loopWidthUnits, amplitude, sign, progress) => ({
+    x: toX(baseUnit + (loopWidthUnits * Math.sin(Math.PI * progress))),
+    y: baselineY + (sign * amplitude * Math.sin(Math.PI * 2 * progress))
+  });
+  const getWavePoint = (startUnit, endUnit, amplitude, sign, progress, waveCount) => {
+    const baseUnit = startUnit + ((endUnit - startUnit) * progress);
+    const lateralSwing = Math.max(0.16, Math.abs(endUnit - startUnit) * 0.18);
+    const x = toX(
+      baseUnit +
+      (lateralSwing * Math.sin(Math.PI * progress) * Math.sin(Math.PI * waveCount * progress))
+    );
+    const y = baselineY +
+      (sign * amplitude * Math.sin(Math.PI * progress) * Math.cos(Math.PI * waveCount * progress));
+    return { x, y };
+  };
+  const appendLinePoints = (points) => {
+    for (const point of points) {
+      pathData += ` L ${point.x.toFixed(2)} ${point.y.toFixed(2)}`;
+    }
+  };
+
+  let currentCanonIndex = canonIndexByNode.A01 || 0;
+  let currentPoint = { unit: currentCanonIndex, x: toX(currentCanonIndex), y: baselineY };
+  let branchContext = null;
+  let branchCount = 0;
+  let pathData = `M ${currentPoint.x.toFixed(2)} ${currentPoint.y.toFixed(2)}`;
+  dotPoints.push({ x: currentPoint.x, y: currentPoint.y });
+
+  for (const choice of choiceList) {
+    const note = normalizeChoiceNote(choice);
+    const nextNodeId = choice.LEADS_TO;
+    const isCanonChoice = note === "canon";
+
+    if (!branchContext && isCanonChoice) {
+      currentCanonIndex = canonIndexByNode[nextNodeId] ?? (currentCanonIndex + 1);
+      currentPoint = { unit: currentCanonIndex, x: toX(currentCanonIndex), y: baselineY };
+      pathData += ` L ${currentPoint.x.toFixed(2)} ${currentPoint.y.toFixed(2)}`;
+      dotPoints.push({ x: currentPoint.x, y: currentPoint.y });
+      continue;
+    }
+
+    if (!branchContext) {
+      const startCanonIndex = canonIndexByNode[choice.PARENT_NODE] ?? currentCanonIndex;
+      const mergeCanonIndex = resolveBranchMergeIndex(choice, nextNodeId, startCanonIndex);
+      const estimatedRemainingEdges = estimateEdgesToCanon(
+        nextNodeId,
+        canonNodeOrder[mergeCanonIndex] || findNearestCanonNode(nextNodeId)
+      );
+      branchCount += 1;
+      const canonSpan = Math.abs(mergeCanonIndex - startCanonIndex);
+      branchContext = {
+        startCanonIndex,
+        mergeCanonIndex,
+        totalEdges: Math.max(1, estimatedRemainingEdges + 1),
+        takenEdges: 0,
+        amplitude: getBranchAmplitude(note),
+        sign: branchCount % 2 === 0 ? 1 : -1,
+        loopMode: (canonSpan === 0 || (canonSpan <= 1 && estimatedRemainingEdges <= 1 && note !== "skip")),
+        loopWidthUnits: canonSpan <= 1 ? 2.25 : Math.max(1.4, canonSpan * 0.72),
+        waveCount: Math.max(2, Math.min(4, estimatedRemainingEdges + canonSpan + 1))
+      };
+    }
+
+    branchContext.takenEdges += 1;
+    const startProgress = (branchContext.takenEdges - 1) / branchContext.totalEdges;
+    const progress = Math.min(1, branchContext.takenEdges / branchContext.totalEdges);
+    const canonSpan = Math.abs(branchContext.mergeCanonIndex - branchContext.startCanonIndex);
+    const distanceBoost = 1 + (canonSpan * 0.42);
+    const branchAmplitude = branchContext.amplitude * distanceBoost;
+    let nextUnit = branchContext.startCanonIndex +
+      ((branchContext.mergeCanonIndex - branchContext.startCanonIndex) * progress);
+    let nextPoint;
+
+    if (branchContext.loopMode) {
+      const startPoint = getLoopPoint(
+        branchContext.startCanonIndex,
+        branchContext.loopWidthUnits,
+        branchAmplitude,
+        branchContext.sign,
+        startProgress
+      );
+      nextPoint = getLoopPoint(
+        branchContext.startCanonIndex,
+        branchContext.loopWidthUnits,
+        branchAmplitude,
+        branchContext.sign,
+        progress
+      );
+      const controlProgress = (startProgress + progress) * 0.5;
+      const controlPoint = getLoopPoint(
+        branchContext.startCanonIndex,
+        branchContext.loopWidthUnits,
+        branchAmplitude * 1.08,
+        branchContext.sign,
+        controlProgress
+      );
+
+      if (branchContext.takenEdges === 1) {
+        currentPoint = { unit: branchContext.startCanonIndex, ...startPoint };
+      }
+
+      pathData += ` Q ${controlPoint.x.toFixed(2)} ${controlPoint.y.toFixed(2)} ${nextPoint.x.toFixed(2)} ${nextPoint.y.toFixed(2)}`;
+      currentPoint = { unit: branchContext.startCanonIndex, ...nextPoint };
+    } else {
+      const samples = [];
+      const sampleCount = 8;
+      for (let index = 1; index <= sampleCount; index += 1) {
+        const sampleProgress = startProgress + (((progress - startProgress) * index) / sampleCount);
+        samples.push(
+          getWavePoint(
+            branchContext.startCanonIndex,
+            branchContext.mergeCanonIndex,
+            branchAmplitude,
+            branchContext.sign,
+            sampleProgress,
+            branchContext.waveCount
+          )
+        );
+      }
+      appendLinePoints(samples);
+      nextPoint = { unit: nextUnit, ...samples[samples.length - 1] };
+      currentPoint = nextPoint;
+    }
+
+    dotPoints.push({ x: currentPoint.x, y: currentPoint.y });
+
+    if (progress >= 1 || canonIndexByNode[nextNodeId] != null) {
+      currentCanonIndex = branchContext.mergeCanonIndex;
+      currentPoint = { unit: currentCanonIndex, x: toX(currentCanonIndex), y: baselineY };
+      branchContext = null;
+    }
+  }
+
+  if (extendCanonToEdge && currentPoint.x < width) {
+    const endPoint = { x: width, y: baselineY };
+    pathData += ` L ${endPoint.x.toFixed(2)} ${endPoint.y.toFixed(2)}`;
+    dotPoints.push(endPoint);
+  }
+
+  return { pathData, dotPoints };
+}
+
+function buildRepresentativeContinuation(startNodeId) {
+  const history = [];
+  const seenNodes = new Set();
+  let nodeId = startNodeId;
+  let guard = 0;
+
+  while (nodeId && nodeId !== "END" && guard < 200) {
+    if (seenNodes.has(nodeId)) break;
+    seenNodes.add(nodeId);
+    guard += 1;
+
+    const options = choicesByParent[nodeId] || [];
+    if (options.length === 0) break;
+
+    const nextChoice =
+      options.find((choice) => normalizeChoiceNote(choice) === "canon") ||
+      options[0];
+
+    history.push(nextChoice);
+    nodeId = nextChoice.LEADS_TO;
+  }
+
+  return history;
+}
+
+function collectPathLocalAlternates() {
+  const alternateRoutes = [];
+  const seenSignatures = new Set();
+
+  for (let index = 0; index < choiceHistory.length; index += 1) {
+    const chosenChoice = choiceHistory[index];
+    const prefix = choiceHistory.slice(0, index);
+    const siblings = choicesByParent[chosenChoice.PARENT_NODE] || [];
+
+    for (const sibling of siblings) {
+      if (sibling.CHOICE_ID === chosenChoice.CHOICE_ID) continue;
+
+      const representativeTail = buildRepresentativeContinuation(sibling.LEADS_TO);
+      const altHistory = prefix.concat(sibling, representativeTail);
+      const signature = altHistory.map((choice) => choice.CHOICE_ID).join(">");
+
+      if (seenSignatures.has(signature)) continue;
+      seenSignatures.add(signature);
+      alternateRoutes.push(altHistory);
+    }
+  }
+
+  return alternateRoutes;
+}
+
+function updateProgressTracker() {
+  if (!progressPathEl || !progressTrackerEl || !progressDotsEl || !progressHoverDotEl) return;
+
+  if (readerViewEl.style.display === "none" || choiceHistory.length === 0) {
+    progressPathEl.setAttribute("d", "");
+    progressDotsEl.innerHTML = "";
+    progressHoverDotEl.innerHTML = "";
+    return;
+  }
+
+  const { pathData, dotPoints } = buildProgressGeometry(choiceHistory);
+  progressPathEl.setAttribute("d", pathData);
+  progressDotsEl.innerHTML = "";
+  for (const point of dotPoints) {
+    const dot = createPerfectDot(progressTrackerEl, point, 3.8);
+    progressDotsEl.appendChild(dot);
+  }
+  progressHoverDotEl.innerHTML = "";
+}
+
+function updateSummaryTracker() {
+  if (!summaryTrackerEl || !summaryPathEl || !summaryAltPathsEl || !summaryDotsEl || !summaryHoverDotEl) return;
+
+  if (summaryViewEl.style.display === "none") {
+    summaryPathEl.setAttribute("d", "");
+    summaryAltPathsEl.innerHTML = "";
+    summaryDotsEl.innerHTML = "";
+    summaryHoverDotEl.innerHTML = "";
+    return;
+  }
+
+  summaryAltPathsEl.innerHTML = "";
+  if (SHOW_SUMMARY_ALT_PATHS) {
+    const routeHistories = collectPathLocalAlternates();
+    for (const routeHistory of routeHistories) {
+      const routePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      routePath.setAttribute("d", buildProgressGeometry(routeHistory, 1000, 220, { extendCanonToEdge: true }).pathData);
+      summaryAltPathsEl.appendChild(routePath);
+    }
+  }
+
+  const { pathData, dotPoints } = buildProgressGeometry(choiceHistory, 1000, 220, { extendCanonToEdge: true });
+  summaryPathEl.setAttribute("d", pathData);
+  summaryDotsEl.innerHTML = "";
+  for (const point of dotPoints) {
+    const dot = createPerfectDot(summaryTrackerEl, point, 3.6);
+    summaryDotsEl.appendChild(dot);
+  }
+
+  summaryHoverDotEl.innerHTML = "";
+  if (summaryHoveredDotIndex != null && dotPoints[summaryHoveredDotIndex]) {
+    const hoverDot = createPerfectDot(summaryTrackerEl, dotPoints[summaryHoveredDotIndex], 5.2);
+    summaryHoverDotEl.appendChild(hoverDot);
+  }
+}
+
+function createPerfectDot(svgEl, point, radiusX) {
+  const dot = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+  const viewBox = svgEl.viewBox.baseVal;
+  const renderedWidth = svgEl.clientWidth || viewBox.width || 1000;
+  const renderedHeight = svgEl.clientHeight || viewBox.height || 220;
+  const scaleX = renderedWidth / (viewBox.width || 1000);
+  const scaleY = renderedHeight / (viewBox.height || 220);
+  const radiusY = scaleY === 0 ? radiusX : radiusX * (scaleX / scaleY);
+
+  dot.setAttribute("cx", point.x.toFixed(2));
+  dot.setAttribute("cy", point.y.toFixed(2));
+  dot.setAttribute("rx", radiusX.toFixed(2));
+  dot.setAttribute("ry", radiusY.toFixed(2));
+  return dot;
+}
+
+function setSummaryHoveredDotIndex(index) {
+  summaryHoveredDotIndex = Number.isInteger(index) ? index : null;
+  updateSummaryTracker();
 }
 
 function queueAsciiRender() {
@@ -174,79 +636,9 @@ function renderAsciiField() {
         char = ASCII_BASE_CHAR;
       }
 
-      const landingStoryCell = getLandingStoryCell(row, col);
-      if (landingStoryCell) {
-        char = landingStoryCell.char;
-        color = landingStoryCell.color;
-      }
-
       drawAsciiChar(char, cellCenterX, cellCenterY, color);
     }
   }
-}
-
-function buildLandingArtCells() {
-  const cells = new Map();
-  if (!landingArtText.trim()) return cells;
-
-  const lines = landingArtText.split(/\r?\n/);
-  const keepChar = (char) => char && char !== " " && char !== "." && char !== ":";
-  const rows = [];
-
-  for (const line of lines) {
-    const kept = [];
-    for (let index = 0; index < line.length; index += 1) {
-      const char = line[index];
-      if (keepChar(char)) {
-        kept.push([index, char]);
-      }
-    }
-    rows.push(kept);
-  }
-
-  const visibleRows = rows
-    .map((entries, rowIndex) => ({ rowIndex, entries }))
-    .filter((row) => row.entries.length > 0);
-
-  if (visibleRows.length === 0) return cells;
-
-  const minRow = visibleRows[0].rowIndex;
-  const maxRow = visibleRows[visibleRows.length - 1].rowIndex;
-  let minCol = Infinity;
-  let maxCol = -Infinity;
-
-  for (const row of visibleRows) {
-    for (const [col] of row.entries) {
-      minCol = Math.min(minCol, col);
-      maxCol = Math.max(maxCol, col);
-    }
-  }
-
-  const sampleX = 2;
-  const sampleY = 2;
-  const offsetCol = -8;
-  const offsetRow = Math.max(2, Math.round(asciiRows * 0.11));
-
-  for (const { rowIndex, entries } of visibleRows) {
-    if ((rowIndex - minRow) % sampleY !== 0) continue;
-
-    const targetRow = offsetRow + Math.floor((rowIndex - minRow) / sampleY);
-    if (targetRow < 0 || targetRow >= asciiRows) continue;
-
-    for (const [sourceCol, char] of entries) {
-      if ((sourceCol - minCol) % sampleX !== 0) continue;
-
-      const targetCol = offsetCol + Math.floor((sourceCol - minCol) / sampleX);
-      if (targetCol < 0 || targetCol >= asciiColumns) continue;
-
-      cells.set(`${targetRow}:${targetCol}`, {
-        char,
-        color: ASCII_LANDING_STORY_COLOR
-      });
-    }
-  }
-
-  return cells;
 }
 
 function sampleCurve(points, samplesPerSegment) {
@@ -287,10 +679,6 @@ function catmullRomPoint(p0, p1, p2, p3, t) {
       ((-p0.y) + (3 * p1.y) - (3 * p2.y) + p3.y) * t3
     )
   };
-}
-
-function getLandingStoryCell(row, col) {
-  return null;
 }
 
 function getSceneShapes(textFullRect, choiceFullRect, circleCollapseProgress) {
@@ -809,21 +1197,29 @@ function contractRect(rect, padX, padY) {
 
 function showLanding() {
   path = [];
+  choiceHistory = [];
+  summaryHoveredDotIndex = null;
   lastChoiceLabel = null;
   currentNodeId = "A01";
   landingViewEl.style.display = "block";
   readerViewEl.style.display = "none";
   summaryViewEl.style.display = "none";
+  updateProgressTracker();
+  updateSummaryTracker();
   refreshAsciiInteraction();
   queueAsciiRender();
 }
 
 function startStory() {
   path = [];
+  choiceHistory = [];
+  summaryHoveredDotIndex = null;
   lastChoiceLabel = null;
   landingViewEl.style.display = "none";
   summaryViewEl.style.display = "none";
   readerViewEl.style.display = "grid";
+  updateProgressTracker();
+  updateSummaryTracker();
   renderNode("A01");
   refreshAsciiInteraction();
 }
@@ -850,16 +1246,22 @@ async function loadData() {
   clearError();
 
   // Load both JSON files (arrays of objects)
-  const [nodesRes, choicesRes] = await Promise.all([
+  const [nodesRes, choicesRes, landingArtRes] = await Promise.all([
     fetch(NODES_FILE),
-    fetch(CHOICES_FILE)
+    fetch(CHOICES_FILE),
+    fetch(LANDING_ART_FILE)
   ]);
 
   if (!nodesRes.ok) throw new Error(`Failed to load ${NODES_FILE} (${nodesRes.status})`);
   if (!choicesRes.ok) throw new Error(`Failed to load ${CHOICES_FILE} (${choicesRes.status})`);
+  if (!landingArtRes.ok) throw new Error(`Failed to load ${LANDING_ART_FILE} (${landingArtRes.status})`);
 
   const nodesArr = await nodesRes.json();
   const choicesArr = await choicesRes.json();
+  landingArtText = await landingArtRes.text();
+  if (landingArtEl) {
+    landingArtEl.textContent = buildLandingArtMarkup(landingArtText);
+  }
 
   // Index nodes by NODE_ID
   nodesById = {};
@@ -882,6 +1284,8 @@ async function loadData() {
       (a.CHOICE_ID || "").localeCompare(b.CHOICE_ID || "")
     );
   }
+
+  buildCanonProgressMap();
 }
 
 function renderNode(nodeId) {
@@ -939,6 +1343,8 @@ function renderNode(nodeId) {
 
       // Remember what the user clicked so we can render it in the summary
       lastChoiceLabel = opt.OPTION_LABEL || "";
+      choiceHistory.push(opt);
+      updateProgressTracker();
 
       renderNode(next);
     });
@@ -947,6 +1353,7 @@ function renderNode(nodeId) {
   }
 
   refreshAsciiInteraction();
+  updateProgressTracker();
   queueAsciiRender();
 }
 
@@ -954,6 +1361,7 @@ function showSummary() {
   // Hide reader, show summary
   readerViewEl.style.display = "none";
   summaryViewEl.style.display = "grid";
+  summaryHoveredDotIndex = null;
 
   // Build scroll content
   summaryScrollEl.innerHTML = "";
@@ -967,6 +1375,10 @@ function showSummary() {
       const choiceDiv = document.createElement("div");
       choiceDiv.className = "summary-choice";
       choiceDiv.textContent = step.chosenLabel;
+      choiceDiv.addEventListener("mouseenter", () => setSummaryHoveredDotIndex(idx));
+      choiceDiv.addEventListener("mouseleave", () => setSummaryHoveredDotIndex(null));
+      choiceDiv.addEventListener("focus", () => setSummaryHoveredDotIndex(idx));
+      choiceDiv.addEventListener("blur", () => setSummaryHoveredDotIndex(null));
       block.appendChild(choiceDiv);
     }
 
@@ -986,6 +1398,8 @@ function showSummary() {
   });
 
   summaryScrollEl.scrollTop = 0;
+  updateProgressTracker();
+  updateSummaryTracker();
   refreshAsciiInteraction();
   queueAsciiRender();
 }
@@ -996,6 +1410,11 @@ function showSummary() {
     buildAsciiField();
     window.addEventListener("resize", () => {
       buildAsciiField();
+      if (landingArtEl && landingArtText) {
+        landingArtEl.textContent = buildLandingArtMarkup(landingArtText);
+      }
+      updateProgressTracker();
+      updateSummaryTracker();
       refreshAsciiInteraction();
     });
     window.addEventListener("mousemove", (event) => {

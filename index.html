@@ -18,6 +18,7 @@
         <canvas id="asciiField" class="ascii-field" aria-hidden="true"></canvas>
 
         <section id="landingView" class="landing-view">
+            <pre id="landingArt" class="landing-art" aria-hidden="true"></pre>
             <div class="landing-copy">
                 <div class="landing-copy-text">
                     <p class="landing-title">THE GARDEN OF FORKING PATHS</p>
@@ -30,6 +31,12 @@
         <!-- Reader view -->
         <div id="readerView" style="display:none;">
             <div id="nodeText" class="text">Loading…</div>
+            <svg id="progressTracker" class="progress-tracker" viewBox="0 0 1000 220" preserveAspectRatio="none"
+                aria-hidden="true">
+                <path id="progressPath" class="progress-path"></path>
+                <g id="progressDots" class="progress-dots"></g>
+                <g id="progressHoverDot" class="progress-hover-dot"></g>
+            </svg>
 
             <br>
             <div id="choices" class="choices"></div>
@@ -51,11 +58,20 @@
                 <button id="restartBtn" class="restart">RE-ENTER THE GARDEN</button>
             </div>
 
+            <div class="summary-map" aria-hidden="true">
+                <svg id="summaryTracker" class="summary-tracker" viewBox="0 0 1000 220" preserveAspectRatio="none">
+                    <g id="summaryAltPaths" class="summary-alt-paths"></g>
+                    <path id="summaryPath" class="summary-path"></path>
+                    <g id="summaryDots" class="summary-dots"></g>
+                    <g id="summaryHoverDot" class="progress-hover-dot"></g>
+                </svg>
+            </div>
+
             <div id="summaryScroll" class="summary-scroll"></div>
         </div>
 
     </main>
 </body>
-<script src="script.js"></script>
+<script src="script.js?v=13"></script>
 
 </html>
